@@ -7,7 +7,8 @@ const ProductContext = React.createContext();
 class ProductProvider extends Component {
     state = {
         products: [],
-        detailProduct:detailProduct
+        detailProduct:detailProduct,
+        cart:[]
     };
     componentDidMount() {
         this.setProducts();
@@ -22,22 +23,32 @@ class ProductProvider extends Component {
     handleDetail = () => {
         console.log('hello from detail');
     };
-    addToCart = () => {
-        console.log('hello from add to cart');
-    };
-    // tester = () => {
-    //     console.log('State products: ', this.state.products[0].inCart);
-    //     console.log('Data products: ', storeProducts[0].inCart);
 
-    //     const tempProducts = [...this.state.products];
-    //     tempProducts[0].inCart = true
-    //     this.setState(() =>{
-    //         return {products:tempProducts}
-    //     },() => {
-    //         console.log("State products: ", this.state.products[0].inCart);
-    //         console.log("Data products: ", storeProducts[0].inCart);
-    //     })
-    // };
+    getItem = id => {
+        const product = this.state.products.find(item => item.id === id);
+        return product;
+    };
+
+    handleDetail = (id) => {
+        const product = this.getItem(id);
+        this.setState(()=>{
+            return {detailProduct:product}
+        })
+    };
+
+    addToCart = (id) => {
+        let tempProducts = [...this.state.products];
+        const index = tempProducts.indexOf(this.getItem(id));
+        const product = tempProducts[index];
+        product.inCart = true;
+        product.counter = 1;
+        const price = product.price;
+        product.total = price;
+        this.setState(() => {
+            return { products: tempProducts, cart:[...this.state.cart,product] };
+        })
+    };
+   
     render() {
         return (
             <ProductContext.Provider
